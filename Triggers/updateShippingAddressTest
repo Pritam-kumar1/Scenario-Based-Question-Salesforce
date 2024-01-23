@@ -1,0 +1,24 @@
+@isTest
+public class updateShippingAddressTest {
+    @isTest
+    static void updateAccountTrigger(){
+        Account testAccount = new Account();
+        testAccount.Name = 'Test Account';
+        testAccount.BillingCity = 'Delhi';
+        testAccount.BillingCountry = 'India';
+        testAccount.BillingPostalCode = '101100';
+        testAccount.BillingState = 'New Delhi';
+        testAccount.BillingStreet = 'New Street DW';
+        
+        Test.startTest();
+        try{
+            insert testAccount;
+            Assert.areEqual(testAccount.BillingCity,[Select ShippingCity from Account where Id =:testAccount.Id LIMIT 1].ShippingCity,'Both are equal');
+        }catch(DmlException e){
+            Assert.fail(e.getDmlMessage(0));        
+        }
+        Test.stopTest();
+        
+    }
+	
+}

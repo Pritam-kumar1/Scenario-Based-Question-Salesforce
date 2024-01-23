@@ -1,0 +1,28 @@
+//Scenario: When an account is inserted or updated if the 
+//billing address is not empty then copy the billing address to shipping address.
+
+
+
+trigger updateShippingAddress on Account (before insert,before update) {
+    if(trigger.isBefore && (trigger.isInsert || trigger.isUpdate)){
+        if(!trigger.new.isEmpty()){
+            for(Account a : Trigger.new){
+                if(a.BillingCity!=null){
+                    a.ShippingCity = a.BillingCity;
+                }
+                if(a.BillingCountry!=null){
+                    a.ShippingCountry = a.BillingCountry;
+                }
+                if(a.BillingPostalCode!=null){
+                    a.ShippingPostalCode = a.BillingPostalCode;
+                }
+                if(a.BillingState!=null){
+                    a.ShippingState = a.BillingState;
+                }
+                if(a.BillingStreet!=null){
+                    a.ShippingStreet = a.BillingStreet;
+                }
+            }
+        }
+    }
+}

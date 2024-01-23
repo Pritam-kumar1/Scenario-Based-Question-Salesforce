@@ -1,0 +1,26 @@
+@isTest
+public class mandatoryPhoneFieldTest {
+    @isTest
+    static void testTrigger(){
+        Account testAccount = new Account(Name='Test Account');
+        Test.startTest();
+        try{
+            insert testAccount;
+            Assert.fail('Trigger Should have trown an error');
+        }catch(DmlException e){
+            Assert.areEqual('You cannot left the phone field empty',e.getDmlMessage(0),'Phone is Empty so error was thrown');
+        }
+        Test.stopTest();
+        /*testAccount.Phone = '9000000007';
+        Test.startTest();
+        try{
+            insert testAccount;
+            Assert.areEqual('9000000007',[Select Phone from Account where id=:testAccount.Id Limit 1].Phone,'Insert Done');
+        }catch(DmlException e){
+            Assert.fail('Shouldn\'t have thrown an error for this');
+        }
+        Test.stopTest();*/
+        
+    }
+
+}

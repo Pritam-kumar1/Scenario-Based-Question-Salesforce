@@ -1,0 +1,21 @@
+//Scenario: While inserting an account 
+//if a user left the phone field empty then an error should come stating
+//"You cannot leave the phone field empty".
+
+
+
+
+
+trigger mandatoryPhoneField on Account (before insert) {
+	//Best Practice to Add Trigger Context Check
+    if(trigger.isBefore && trigger.isInsert){
+        //Checking if the new account in epty or not
+        if(!trigger.new.isEmpty()){
+            for(Account a : Trigger.new){
+                if(String.isBlank(a.Phone))
+                    //Throwing Error on the Phone Field.
+                    a.Phone.addError('You cannot leave the phone field empty');
+            }
+        }
+    }
+}

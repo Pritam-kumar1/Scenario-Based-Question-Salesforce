@@ -1,0 +1,25 @@
+//Scenario: Whenever Account's Phone field is updated then all related Contact's phone field should also get updated with Parent Account's Phone.
+trigger updateContactFromAccount on Account (after update) {
+    Map<Id,Account> mapIdPhone = new Map<Id,Account>();
+    if(trigger.isAfter && trigger.isUpdate){
+        if(!trigger.new.isEmpty()){ 
+            for(Account a : trigger.new){
+                if(trigger.oldMap.get(a.Id).Phone != a.Phone){
+                    mapIdPhone.put(a.Id,a);
+                }
+            }
+        }
+    }
+    List<Contact> conList = [Select AccountId,Id,Phone from Contact where AccountId IN :mapIdPhone.keyset()];
+    List<Contact> toUpdateCon = new List<Contact>();
+    
+    if(!conList.isEmpty()){
+        for(Contact c : conList){
+        	c.Phone = mapIdPhone.get(c.AccountId).Phone;
+            toUpdateCon.add(c);
+        }
+    }
+    if(!toUpdateCon.isEmpty()){
+        update toUpdateCon;
+    }
+}

@@ -1,0 +1,21 @@
+@isTest
+public class updateAccountFromContactTest {
+    @isTest
+    static void updateAccountTest(){
+        Account a = new Account(Name='Test Account');
+    	insert a;
+    	Contact c = new Contact(LastName='harbor',AccountId = a.Id);
+    	insert c;
+        Test.startTest();
+        try{
+            c.Description = 'Test Description 12 34';
+            update c;
+            Assert.areEqual('Test Description 12 34',[Select Description from Account where Id IN (Select AccountId from contact where Id =:c.Id)].Description,'Phone no updated in contact');
+        }catch(DmlException e){
+            Assert.fail(e.getDmlMessage(0)+' :Error while update in account');
+        }
+        Test.stopTest();
+    }
+	
+
+}

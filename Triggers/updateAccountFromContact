@@ -1,0 +1,26 @@
+//Scenario: Whenever a Contact's description is updated then its Parent Account's description should also get updated by it.
+trigger updateAccountFromContact on Contact (after update) {
+    Map<Id,Contact> conList = new Map<Id,Contact>();
+    if(trigger.isAfter && (trigger.isUpdate)){
+        if(!trigger.new.isEmpty()){
+            for(Contact c : trigger.new){
+                if(trigger.oldMap.get(c.Id).Description != c.Description){
+                    conList.put(c.AccountId,c);
+                }
+            }
+        }
+    }
+    List<Account> accList = [Select Description,Id from Account where Id IN :conList.keySet()];
+    List<Account> toUpdateacc = new List<Account>();
+    
+    if(!accList.isEmpty()){
+    	for(Account a : accList){
+        	a.Description = conList.get(a.Id).Description;
+            toUpdateacc.add(a);
+    	} 
+    }
+    if(!toUpdateacc.isEmpty()){
+        update toUpdateacc;
+    }
+    
+}

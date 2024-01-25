@@ -1,0 +1,21 @@
+@isTest
+public class checkduplicateTest {
+    @testSetup static void setup() {
+		Account a = new Account(Name='Test Account');
+       	insert a;
+    }
+	@isTest
+    static void testTrigger(){
+        Account testAccount = new Account(Name='Test Account');
+        Test.startTest();
+        try{
+            insert testAccount;
+            Assert.fail('Trigger Should have trown an error');
+        }catch(DmlException e){
+            Assert.areEqual('Name Aready Present1',e.getDmlMessage(0),'Name is dublicate so error was thrown');
+        }
+        Test.stopTest();
+        
+        
+    }
+}

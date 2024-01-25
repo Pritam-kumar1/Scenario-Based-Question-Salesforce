@@ -1,0 +1,45 @@
+@isTest
+public class countContactTest {
+	@testSetup static void setup() {
+		Account a = new Account(Name='Test Account');
+       	insert a;
+      	List<Contact> con = new List<Contact>();
+        for(Integer i =0 ; i<4;i++){
+            con.add(new Contact(LastName = 'Trig'+ i,AccountId = a.Id));
+        }
+        insert con;
+    }
+    @isTest static void countInsertUndelete(){
+        Account a = [Select Name,Id from Account Where Name ='Test Account' Limit 1];
+        
+        Contact c = new Contact(LastName = 'Test Contact',AccountId = a.Id);
+        
+        Test.startTest();
+        insert c;
+        Test.stopTest();
+        
+        Assert.areEqual(5,[Select Id,Number_Of_Contacts__c from Account where id = :a.Id].Number_Of_Contacts__c,'Both are equal');
+    }
+    @isTest static void countUpdate(){
+        Account a = new Account(Name='Test Account 1');
+       	insert a;
+        Contact c = [Select LastName,Id,AccountId from Contact Where Name ='Trig0' Limit 1];
+        
+        Test.startTest();
+        c.AccountId = a.Id;
+        update c;
+        Test.stopTest();
+        
+        Assert.areEqual(1,[Select Id,Number_Of_Contacts__c from Account where id = :a.Id].Number_Of_Contacts__c,'Both are equal');
+    }
+    @isTest static void countDelete(){
+        Account a = [Select Name,Id from Account Where Name ='Test Account' Limit 1];
+        Contact c = [Select LastName,Id,AccountId from Contact Where Name ='Trig0' Limit 1];
+        
+        Test.startTest();
+        delete c;
+        Test.stopTest();
+        
+        Assert.areEqual(3,[Select Id,Number_Of_Contacts__c from Account where id = :a.Id].Number_Of_Contacts__c,'Both are equal');
+    }
+}

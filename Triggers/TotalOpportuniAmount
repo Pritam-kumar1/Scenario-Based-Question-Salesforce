@@ -1,0 +1,55 @@
+//Scenario: Trigger to find sum of all related Opportunities Amount of an Account.
+trigger TotalOpportuniAmount on Opportunity (After insert,After update,After delete,after undelete) {
+    Set<Id> accList = new Set<Id>();
+    if(trigger.isAfter && (trigger.isInsert || trigger.isUndelete)){
+        if(!trigger.new.isEmpty()){
+            for(Opportunity o : trigger.new){
+                if(o.AccountId!=null)
+                accList.add(o.AccountId);
+            }
+        }
+    }
+    if(trigger.isAfter && trigger.isDelete){
+        if(!trigger.old.isEmpty()){
+            for(Opportunity o : trigger.old){
+                if(o.AccountId!=null)
+                accList.add(o.AccountId);
+            }
+        }
+    }
+    if(trigger.isAfter && trigger.isUpdate){
+        if(!trigger.new.isEmpty()){
+            for(Opportunity o : trigger.new){
+                if(o.AccountId != trigger.oldMap.get(o.Id).AccountId){
+                    if(o.AccountId!=null){
+                        accList.add(o.AccountId);
+                    }
+                    if(trigger.oldMap.get(o.Id).AccountId != null){
+                        accList.add(trigger.oldMap.get(o.Id).AccountId);
+                    }
+                }else{
+                    if(o.AccountId!=null)
+                    accList.add(o.AccountId);
+                }
+            }
+        }
+    }
+    
+    if(!accList.isEmpty()){
+        List<AggregateResult> aggList = [Select AccountId, Sum(Amount) amt from Opportunity where AccountId IN :accList group by AccountId];
+        List<Account> accUpdateList = new List<Account>();
+        if(!aggList.isEmpty()){
+            for(AggregateResult a : aggList){
+            	Account acc = new Account();
+            	acc.Id = (Id)a.get('AccountId');
+            	acc.Total_Amount_Opportunity__c = (Decimal)a.get('amt');
+            	accUpdateList.add(acc);
+        	}
+        }
+        
+        if(!accUpdateList.isEmpty()){
+        	update accUpdateList;
+    	}
+    }
+    
+}

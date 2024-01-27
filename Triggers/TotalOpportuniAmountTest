@@ -1,0 +1,55 @@
+@isTest
+public class TotalOpportuniAmountTest {
+    @testSetup static void setupData(){
+        Account a = new Account(Name='Test 1');
+        insert a;
+        Opportunity o = new Opportunity();
+        o.Name = 'Test opp';
+        o.CloseDate = Date.Today() + 1;
+        o.StageName = 'Prospecting';
+        o.Amount = 1000;
+        o.AccountId = a.id;
+        insert o;
+    }
+    @istest static void testInsertUndelete(){
+        Account acc = [select Id,Total_Amount_Opportunity__c from Account where name = 'Test 1'];
+        Opportunity o = new Opportunity();
+        o.Name = 'Test opp 1';
+        o.CloseDate = Date.Today() + 2;
+        o.StageName = 'Prospecting';
+        o.Amount = 2000;
+        o.AccountId = acc.id;
+        test.startTest();
+        insert o;
+        test.stopTest();
+        Assert.areEqual(3000,[select Total_Amount_Opportunity__c from Account where id=:acc.ID].Total_Amount_Opportunity__c,'Total Updated on insert');
+    }
+    @istest static void testUpdate(){
+        Account acc = [select Id,Total_Amount_Opportunity__c from Account where name = 'Test 1'];
+        Opportunity o = [Select Amount,id from Opportunity where AccountId=:acc.ID Limit 1];
+        o.Amount= 4000;
+        test.startTest();
+        update o;
+        test.stopTest();
+        Assert.areEqual(4000,[select Total_Amount_Opportunity__c from Account where id=:acc.ID].Total_Amount_Opportunity__c,'Total Updated on insert');
+    }
+    @istest static void testUpdate1(){
+        Account a = new Account(Name='Test 12');
+        insert a;
+        Opportunity o = [Select Amount,Id,AccountId from Opportunity where Name='Test opp'];
+        o.Amount= 4000;
+        o.AccountId= a.Id;
+        test.startTest();
+        update o;
+        test.stopTest();
+        Assert.areEqual(4000,[select Total_Amount_Opportunity__c from Account where id=:a.ID].Total_Amount_Opportunity__c,'Total Updated on insert');
+    }
+    @istest static void testDelete(){
+        Account acc = [select Id,Total_Amount_Opportunity__c from Account where name = 'Test 1'];
+        Opportunity o = [Select Amount,id from Opportunity where AccountId=:acc.ID  Limit 1];
+        test.startTest();
+        delete o;
+        test.stopTest();
+        Assert.areEqual(1000,[select Total_Amount_Opportunity__c from Account where id=:acc.ID].Total_Amount_Opportunity__c,'Total Updated on insert');
+    }
+}

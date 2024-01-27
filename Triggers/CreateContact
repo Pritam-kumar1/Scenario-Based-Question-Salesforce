@@ -1,3 +1,4 @@
+//Scenario: Trigger to create a related Contact of Account with same phone as Account's phone if custom checkbox field on Account is checked.
 trigger CreateContact on Account (after insert,after update) {
     List<Contact> conList = new List<Contact>();
     Integer i = 0;

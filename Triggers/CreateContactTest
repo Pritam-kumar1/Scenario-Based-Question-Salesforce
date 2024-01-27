@@ -1,0 +1,12 @@
+@isTest
+public class CreateContactTest {
+    
+    @istest static void checkContactInsert(){
+        Account a = new Account(Name = 'Test Account', Phone = '345678');
+        a.Create_Contact__c = True;
+        Test.startTest();
+        insert a;
+        Test.stopTest();
+        Assert.areEqual(1,[select id from contact where AccountId = :a.Id].size(), 'Size should be equal to 1 in insert');
+    }
+}

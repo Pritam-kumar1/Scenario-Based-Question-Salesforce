@@ -1,0 +1,11 @@
+trigger PreventAccountDelete on Account (before delete) {
+    if(Trigger.isBefore && Trigger.isdelete){
+        if(!Trigger.old.isEmpty()){
+            for(Account a : Trigger.old){
+                if(a.Active__c=='Yes'){
+                    a.addError('Can\'t delete an active account ');
+                }
+            }
+        }
+    }
+}

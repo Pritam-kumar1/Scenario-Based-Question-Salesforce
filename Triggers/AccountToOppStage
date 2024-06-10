@@ -1,0 +1,29 @@
+//Write a trigger on the Account when the Account is updated check all opportunities related to the account.
+//Update all Opportunities Stage to close lost if an opportunity created date is greater than 30 days from today and stage not equal to close won.
+trigger AccountToOppStage on Account (after update) {
+    Set<Id> accID = new Set<Id>();
+    if(Trigger.isAfter && trigger.isUpdate){
+        if(!trigger.new.isEmpty()){
+            for(Account a : trigger.new){
+                accId.add(a.Id);
+            }
+        }
+    }
+    if(!accID.isEmpty()){
+        List<Opportunity> opp = [Select CreatedDate,Id,StageName from Opportunity where AccountId In :accID];
+        List<Opportunity> oppToUpdate = new List<Opportunity>();
+        if(!opp.isEmpty()){
+            for(Opportunity o : opp){
+                if(o.CreatedDate.addDays(30) < Date.today() && o.StageName != 'Closed Won'){
+                    o.StageName = 'Closed Lost';
+                    o.CloseDate = date.today();
+                    oppToUpdate.add(o);
+                }
+            }
+        }
+        if(!oppToUpdate.isEmpty()){
+            update oppToUpdate;
+        }
+    }
+
+}

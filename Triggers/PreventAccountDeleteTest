@@ -1,0 +1,19 @@
+@isTest
+public class PreventAccountDeleteTest {
+	@isTest
+    static void checkAccountDeleteTest(){
+        Account a = new Account();
+        a.Active__c = 'Yes';
+        a.Name = 'Test Account';
+        insert a;
+        Test.startTest();
+        try{
+            delete a;
+            Assert.fail('DmlException expected');
+        }catch(DmlException e){
+             Assert.areEqual('Can\'t delete an active account ', e.getDmlMessage(0));
+        }
+        Test.stopTest();
+        
+    }
+}

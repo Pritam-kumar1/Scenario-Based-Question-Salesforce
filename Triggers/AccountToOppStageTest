@@ -1,0 +1,21 @@
+@isTest
+public class AccountToOppStageTest {
+	@istest
+    static void checkAccountToOppStage(){
+        Account a = new Account();
+        a.Name = 'Test Account';
+        insert a;
+        Opportunity op = new Opportunity();
+        op.StageName = 'Prospecting';
+        op.AccountId = a.Id;
+        //op.CreatedDate = Date.today().addDays(-40); //This Date field is not Writable
+        op.Name = 'Test opp';
+        insert op;
+        Test.startTest();
+        a.Name = 'Test Account New';
+        update a;
+        Test.stopTest();
+        //Assert will fail because we can't write Created Date. 
+        Assert.areEqual('Closed Lost',[select StageName from Opportunity where AccountId =:a.Id LIMIT 1].StageName,'SategName should change to Closed Lost');
+    }
+}

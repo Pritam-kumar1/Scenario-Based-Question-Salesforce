@@ -1,0 +1,22 @@
+@isTest
+private class notMorethan2ContactTest {
+	@isTest
+    static void checkAccountDeleteTest(){
+        Account a = new Account(Name='Test Account');
+       	insert a;
+      	List<Contact> con = new List<Contact>();
+        for(Integer i =0 ; i<=1;i++){
+            con.add(new Contact(LastName = 'Trig'+ i,AccountId = a.Id));
+        }
+        insert con;
+        Contact con1 = new Contact(LastName = 'Trig',AccountId = a.Id);
+        Test.startTest();
+        try{    
+            insert con1;
+        }catch(DmlException e){
+             Assert.areEqual('Already have two or more contacts', e.getDmlMessage(0));
+        }
+        Test.stopTest();
+        
+    }
+}

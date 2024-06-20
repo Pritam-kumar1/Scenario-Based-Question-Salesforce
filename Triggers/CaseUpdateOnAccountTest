@@ -1,0 +1,17 @@
+@isTest
+public class CaseUpdateOnAccountTest {
+    @isTest static void checkCaseUpdate(){
+        Account newAcc = new Account();
+        newAcc.Name = 'Test Account';
+        insert newAcc;
+        Case c = new Case();
+        c.AccountId = newAcc.Id;
+        c.Origin = 'Phone';
+        
+        Test.startTest();
+        insert c;
+        Test.stopTest();
+        
+        Assert.areEqual(Decimal.valueOf([Select id,CaseNumber from Case where AccountId =:newAcc.Id].CaseNumber),[select id,New_Case_Inserted__c from Account where Id = :newAcc.Id].New_Case_Inserted__c, 'Size should be equal to 1 in insert');
+    }
+}

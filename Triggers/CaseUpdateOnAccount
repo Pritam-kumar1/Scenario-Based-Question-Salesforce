@@ -1,0 +1,24 @@
+//When a Case is inserted on any Account, put the latest Case Number on the Account in Latest Case Inserted field.
+trigger CaseUpdateOnAccount on Case (after insert) {
+    Map<Id,Case> accID = new Map<Id,Case>();
+    if(trigger.isAfter && trigger.isInsert){
+        for(Case c : Trigger.new){
+            if(c.AccountId != null){
+                accID.put(c.AccountId,c);
+            }	
+        }
+    }
+    if(!accID.isEmpty()){
+        List<Account> acc = [Select Id,New_Case_Inserted__c from Account Where Id IN :accID.keySet()];
+        List<Account> accToUpdate = new List<Account>();
+        if(!acc.isEmpty()){
+            for(Account a : acc){
+                a.New_Case_Inserted__c = Decimal.valueOf(accID.get(a.Id).CaseNumber);
+                accToUpdate.add(a);
+            }
+        }
+        if(!accToUpdate.isEmpty()){
+            update accToUpdate;
+        }
+    }
+}
